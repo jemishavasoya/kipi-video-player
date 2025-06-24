@@ -42,4 +42,6 @@ class AnalyticsController {
   void dispose() {
     _stopPeriodicLog();
   }
+
+  double get lastSpeed => _lastSpeed;
 } 

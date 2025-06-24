@@ -14,6 +14,7 @@ class _YoutubeVideoPlayerState extends State<YoutubeVideoPlayer> {
   late final PodPlayerController _controller;
   late final AnalyticsController _analytics;
   double _lastPosition = 0.0;
+  bool _wasPlaying = false;
 
   @override
   void initState() {
@@ -28,17 +29,18 @@ class _YoutubeVideoPlayerState extends State<YoutubeVideoPlayer> {
   void _onControllerUpdate() {
     final value = _controller.videoPlayerValue;
     if (value == null) return;
-    if (value.isPlaying && !_controller.wasPlaying) {
+    if (value.isPlaying && !_wasPlaying) {
       _analytics.onPlay();
     }
-    if (!value.isPlaying && _controller.wasPlaying) {
+    if (!value.isPlaying && _wasPlaying) {
       _analytics.onPause();
     }
+    _wasPlaying = value.isPlaying;
     if (value.position.inSeconds != _lastPosition.toInt()) {
       _analytics.onPositionUpdate(value.position.inSeconds.toDouble());
       _lastPosition = value.position.inSeconds.toDouble();
     }
-    if (value.playbackSpeed != _analytics._lastSpeed) {
+    if (value.playbackSpeed != _analytics.lastSpeed) {
       _analytics.onSpeedChange(value.playbackSpeed);
     }
     // Detect seek
